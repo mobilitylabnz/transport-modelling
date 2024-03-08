@@ -2,6 +2,8 @@
 This scripts exports section and turn time series data to GeoJSON format.
 output columns should be defined based on the name used in the attribute data. This can be found in the type data in the Aimsun GUI.
 
+The replication must have data retrieved to be able to export the time series data.
+
 08/03/2024
 Caleb Deverell
 caleb@mobilitylab.co.nz
