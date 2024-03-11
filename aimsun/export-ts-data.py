@@ -60,12 +60,13 @@ for replication_id in replication_ids:
 
 
     ptplan = scenario.getPublicLinePlan()
-    ptvehs = ptplan.getUsedVehicles()
-    for ptveh in ptvehs:
-        name = veh.getName()
-        id = veh.getId()
-        if name not in veh_dict:
-            veh_dict[name] = id
+    if ptplan:
+        ptvehs = ptplan.getUsedVehicles()
+        for ptveh in ptvehs:
+            name = veh.getName()
+            id = veh.getId()
+            if name not in veh_dict:
+                veh_dict[name] = id
 
 
     # Initialize a list to hold GeoJSON features
