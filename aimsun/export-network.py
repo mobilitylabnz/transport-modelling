@@ -1,10 +1,7 @@
 '''
-This scripts exports section and turn time series data to GeoJSON format.
-output columns should be defined based on the name used in the attribute data. This can be found in the type data in the Aimsun GUI.
+This scripts exports sections and turns to GeoJSON format for use in Panels dashboard.
 
-The replication must have data either loaded in or able to be retrieved from the database.
-
-28/01/2024
+02/12/2025
 Caleb Deverell
 caleb@mobilitylab.co.nz
 '''
@@ -12,22 +9,24 @@ import os
 from datetime import datetime, timedelta
 import json
 
-def export_gis(scenario_name, replication_id, directory):
+def export_gis(scenario_name, replication_id, directory, subNetPolygonId=None):
 
 
+	if subNetPolygonId is not None:
+		subNetPolygon = model.getCatalog().find(subNetPolygonId)
+		sectionsInside = subNetPolygon.classifyObjectsPartiallyInside(scenario)
+		turnsInside = subNetPolygon.classifyObjectsInside(scenario)
 
-	subNetPolygon = model.getCatalog().find(89335707)
 	scenario = model.getCatalog().find(replication_id).getExperiment().getScenario()
-	sectionsInside = subNetPolygon.classifyObjectsPartiallyInside(scenario)
-	turnsInside = subNetPolygon.classifyObjectsInside(scenario)
+	
 
 
 	geoModel = model.getGeoModel()
 
 	translator = geoModel.getCoordinateTranslator()
 
-	filePath_section = os.path.join(directory, 'Resources', f'{scenario_name}_sections.geojson')
-	filePath_turn = os.path.join(directory, 'Resources', f'{scenario_name}_turns.geojson')
+	filePath_section = os.path.join(directory, 'Resources', 'Panels', f'{scenario_name}_sections.geojson')
+	filePath_turn = os.path.join(directory, 'Resources', 'Panels', f'{scenario_name}_turns.geojson')
 
 
 	# initial setup
@@ -40,7 +39,7 @@ def export_gis(scenario_name, replication_id, directory):
 	features = []
 
 	for section in model.getCatalog().getObjectsByType(model.getType("GKSection")).values():
-		if section.exists(scenario) and section in sectionsInside:
+		if section.exists(scenario) and (subNetPolygonId is None or section in sectionsInside):
 			# id
 			id = section.getId()
 			# name
@@ -99,7 +98,7 @@ def export_gis(scenario_name, replication_id, directory):
 	features = []
 
 	for turn in model.getCatalog().getObjectsByType(model.getType("GKTurning")).values():
-		if turn.exists(scenario) and turn in turnsInside:
+		if turn.exists(scenario) and (subNetPolygonId is None or turn in turnsInside):
 			# id
 			id = turn.getId()
 			# name
